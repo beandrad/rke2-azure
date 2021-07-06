@@ -1,0 +1,15 @@
+{
+    "tenantId": "${tenant_id}",
+    "aadClientId": "${client_id}",
+    "aadClientSecret": "${client_secret}",
+    "subscriptionId": "${subscription_id}",
+    "vmType": "vmss",
+    "resourceGroup": "${rg_name}",
+    "location": "${location}",
+    "subnetName": "${subnet_name}",
+    "securityGroupName": "${nsg_name}",
+    "vnetName": "${virtual_network_name}",
+    "vnetResourceGroup": "${rg_name}",
+    "routeTableName": "${rg_name}",
+    "loadBalancerSku": "standard"
+}

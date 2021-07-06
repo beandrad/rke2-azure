@@ -1,0 +1,14 @@
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+*.terraform.lock.hcl*
+
+# tf vars
+*.tfvars
+
+# rke2
+*.kubeconfig
+.ssh
