@@ -9,6 +9,10 @@
     // ssh keys for git repos
     "type=bind,source=${env:HOME}${env:USERPROFILE}/.ssh,target=/home/vscode/.ssh-localhost"
   ],
+  // We need to be able to use the network for openVPN (see https://github.com/haugene/docker-transmission-openvpn/issues/488).
+  "runArgs": [
+    "--cap-add=NET_ADMIN"
+  ],
   // Set *default* container specific settings.json values on container create.
   "settings": {
     "terminal.integrated.shell.linux": "/bin/zsh"

@@ -1,12 +1,12 @@
 terraform {
   required_providers {
     azurerm = {
-      version = "~>2.66.0"      
+      version = "~>2.66.0"
       source  = "hashicorp/azurerm"
     }
     tls = {
-      source  = "Hashicorp/tls"
-      version = ">= 3.0.0"
+      source  = "hashicorp/tls"
+      version = "~>3.1.0"
     }
   }
 }
@@ -94,4 +94,16 @@ module "rke2_cluster" {
   depends_on = [
     azurerm_resource_group.rke2
   ]
+}
+
+module "vpn_gateway" {
+  source                      = "./modules/vpn-gateway"
+  location                    = var.location
+  network_resource_group_name = azurerm_resource_group.rke2.name
+  tags                        = local.tags
+  vnet_name                   = azurerm_virtual_network.rke2.name
+  gateway_public_ip_name      = "${var.cluster_name}-gateway-ip"
+  front_end_address_space     = "10.0.12.0/24"
+  vpn_client_address_space    = ["10.20.2.0/29"]
+  cert_organisation           = "az dev"
 }

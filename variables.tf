@@ -3,7 +3,7 @@ variable "cluster_name" {
 }
 
 variable "location" {
-  type = string
+  type    = string
   default = "uksouth"
 }
 
