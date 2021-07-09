@@ -11,5 +11,6 @@
     "vnetName": "${virtual_network_name}",
     "vnetResourceGroup": "${rg_name}",
     "routeTableName": "${rg_name}",
-    "loadBalancerSku": "standard"
+    "loadBalancerSku": "standard",
+    "cloud": "${cloud}"
 }

@@ -22,6 +22,14 @@ variable "service_principal" {
     client_secret = string
   })
 }
+variable "cloud" {
+  type = string
+  default = "AzureUSGovernmentCloud"
+  validation {
+    condition     = contains(["AzureUSGovernmentCloud", "AzurePublicCloud"], var.cloud)
+    error_message = "Allowed values for cloud are \"AzureUSGovernmentCloud\" or \"AzurePublicCloud\"."
+  }
+}
 variable "vm_size" {
   type = string
   default = "Standard_DS4_v2"

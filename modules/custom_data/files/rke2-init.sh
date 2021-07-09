@@ -2,6 +2,7 @@
 
 export TYPE="${type}"
 export CCM="${ccm}"
+export CLOUD="${cloud}"
 
 # info logs the given argument at info log level.
 info() {
@@ -31,17 +32,28 @@ append_config() {
   echo $1 >> "/etc/rancher/rke2/config.yaml"
 }
 
+get_azure_domain() {
+  if [ $CLOUD = "AzureUSGovernmentCloud" ]; then
+    echo 'usgovcloudapi.net'
+  else
+    echo 'azure.com'
+  fi
+}
+
 # The most simple "leader election" you've ever seen in your life
 elect_leader() {
 
-  access_token=$(curl -s 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fmanagement.azure.com' -H Metadata:true | jq -r ".access_token")
+  azure_domain=$(get_azure_domain)
+
+  access_token=$(curl -s "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fmanagement.$${azure_domain}" -H Metadata:true | jq -r ".access_token")
 
   read subscriptionId resourceGroupName virtualMachineScaleSetName < \
     <(echo $(curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance?api-version=2020-09-01" | jq -r ".compute | .subscriptionId, .resourceGroupName, .vmScaleSetName"))
 
-  first=$(curl -s https://management.azure.com/subscriptions/$${subscriptionId}/resourceGroups/$${resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/$${virtualMachineScaleSetName}/virtualMachines?api-version=2020-12-01 \
+  first=$(curl -s https://management.$${azure_domain}/subscriptions/$${subscriptionId}/resourceGroups/$${resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/$${virtualMachineScaleSetName}/virtualMachines?api-version=2020-12-01 \
           -H "Authorization: Bearer $${access_token}" | jq -ej "[.value[]] | sort_by(.instanceId | tonumber) | .[0].properties.osProfile.computerName")
 
+  
   if [ $(hostname) = $${first} ]; then
     SERVER_TYPE="leader"
     info "Electing as cluster leader"
@@ -85,7 +97,9 @@ cp_wait() {
 fetch_token() {
   info "Fetching rke2 join token..."
 
-  access_token=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fvault.azure.net' -H Metadata:true | jq -r ".access_token")
+  azure_domain=$(get_azure_domain)
+
+  access_token=$(curl "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fvault.$${azure_domain}" -H Metadata:true | jq -r ".access_token")
   token=$(curl '${vault_url}secrets/${token_secret}?api-version=2016-10-01' -H "Authorization: Bearer $${access_token}" | jq -r ".value")
 
   echo "token: $${token}" >> "/etc/rancher/rke2/config.yaml"
@@ -103,7 +117,9 @@ upload() {
     ((retries--))
   done
 
-  access_token=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fvault.azure.net' -H Metadata:true | jq -r ".access_token")
+  azure_domain=$(get_azure_domain)
+
+  access_token=$(curl "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fvault.$${azure_domain}" -H Metadata:true | jq -r ".access_token")
 
   curl -v -X PUT \
     -H "Content-Type: application/json" \

@@ -31,6 +31,15 @@ variable "ccm" {
   default     = false
 }
 
+variable "cloud" {
+  type = string
+  default = "AzureUSGovernmentCloud"
+  validation {
+    condition     = contains(["AzureUSGovernmentCloud", "AzurePublicCloud"], var.cloud)
+    error_message = "Allowed values for cloud are \"AzureUSGovernmentCloud\" or \"AzurePublicCloud\"."
+  }
+}
+
 #
 # Custom Userdata
 #
@@ -43,3 +52,5 @@ variable "post_userdata" {
   description = "Custom userdata to run immediately after rke2 node attempts to join cluster"
   default     = ""
 }
+
+

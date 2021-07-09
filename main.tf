@@ -89,6 +89,7 @@ module "rke2_cluster" {
   vnet_name           = azurerm_virtual_network.rke2.name
   snet_name           = azurerm_subnet.rke2.name
   service_principal   = var.service_principal
+  cloud = var.cloud
   tags                = local.tags
 
   depends_on = [

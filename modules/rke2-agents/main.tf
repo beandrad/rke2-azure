@@ -26,6 +26,7 @@ module "init" {
   pre_userdata  = var.pre_userdata
   post_userdata = var.post_userdata
   ccm           = false
+  cloud = var.cloud
 
   agent = true
 }
@@ -69,6 +70,7 @@ data "template_cloudinit_config" "init" {
             subnet_name = var.subnet_name
             virtual_network_name = var.virtual_network_name
             nsg_name = var.k8s_nsg_name
+            cloud = var.cloud
           })
           path        = "/etc/rancher/rke2/cloud.conf"
           permissions = "5555"

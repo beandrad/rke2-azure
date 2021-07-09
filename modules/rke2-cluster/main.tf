@@ -41,6 +41,7 @@ module "rke2" {
   priority = "Spot"
 
   enable_ccm = true
+  cloud = var.cloud
 
   tags = var.tags
 }
@@ -65,6 +66,7 @@ module "generic_agents" {
   instances = 1
   vm_size = var.vm_size
   priority  = "Spot"
+  cloud = var.cloud
 
   tags = var.tags
 }
